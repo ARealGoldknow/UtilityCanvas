@@ -16,7 +16,10 @@ venv/
 # Generated/runtime output
 generated_audio/
 build/
-downloads/
+downloads/*
+!downloads/.gitkeep
+!downloads/VocalCanvas.dmg
+!downloads/VocalCanvasWindows.zip
 
 # Logs
 *.log
