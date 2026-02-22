@@ -8,6 +8,7 @@ set "APP_SCRIPT=%PROJECT_ROOT%\windows_app\vocal_canvas_windows.py"
 set "OUTPUT_DIR=%SCRIPT_DIR%dist"
 set "WORK_DIR=%SCRIPT_DIR%build"
 set "SPEC_DIR=%SCRIPT_DIR%"
+set "PY_CMD=python"
 
 if not exist "%APP_SCRIPT%" (
   echo [ERROR] Missing app script:
@@ -15,15 +16,26 @@ if not exist "%APP_SCRIPT%" (
   exit /b 1
 )
 
+python --version >nul 2>&1
+if errorlevel 1 (
+  if exist "C:\users\crossover\AppData\Local\Programs\Python\Python311\python.exe" (
+    set "PY_CMD=C:\users\crossover\AppData\Local\Programs\Python\Python311\python.exe"
+  )
+)
+
+echo [0/3] Using Python command:
+echo   %PY_CMD%
+
 echo [1/3] Installing build dependencies...
-python -m pip install --upgrade pip
+%PY_CMD% -m ensurepip --upgrade >nul 2>&1
+%PY_CMD% -m pip install --upgrade pip
 if errorlevel 1 exit /b 1
 
-python -m pip install -r "%PROJECT_ROOT%\windows_app\requirements.txt" pyinstaller
+%PY_CMD% -m pip install -r "%PROJECT_ROOT%\windows_app\requirements.txt" pyinstaller
 if errorlevel 1 exit /b 1
 
 echo [2/3] Building VocalCanvasSetup.exe with PyInstaller...
-pyinstaller ^
+%PY_CMD% -m PyInstaller ^
   --noconfirm ^
   --clean ^
   --windowed ^

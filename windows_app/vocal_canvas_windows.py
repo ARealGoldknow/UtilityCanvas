@@ -8,7 +8,13 @@ import winsound
 from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
-import pyttsx3
+try:
+    import pyttsx3
+except Exception as exc:  # pragma: no cover - depends on runtime environment
+    pyttsx3 = None
+    PYTTSX3_IMPORT_ERROR = str(exc)
+else:
+    PYTTSX3_IMPORT_ERROR = ""
 
 # User-provided dark palette
 BG = "#00113e"
@@ -347,8 +353,10 @@ class WindowsTTSApp(tk.Tk):
         self.minsize(800, 560)
         self.configure(bg=BG)
 
-        self.engine = pyttsx3.init()
-        self.voices = self.engine.getProperty("voices")
+        self.engine = None
+        self.voices = []
+        self.engine_error = ""
+        self._initialize_engine()
 
         self.voice_var = tk.StringVar()
         self.rate_var = tk.IntVar(value=170)
@@ -359,6 +367,19 @@ class WindowsTTSApp(tk.Tk):
         self._build_ui()
         self._load_voices()
         self._update_char_count()
+
+    def _initialize_engine(self) -> None:
+        if pyttsx3 is None:
+            self.engine_error = f"pyttsx3 unavailable: {PYTTSX3_IMPORT_ERROR}"
+            return
+
+        try:
+            self.engine = pyttsx3.init()
+            self.voices = self.engine.getProperty("voices") or []
+        except Exception as exc:
+            self.engine = None
+            self.voices = []
+            self.engine_error = str(exc)
 
     def _build_ui(self) -> None:
         style = ttk.Style(self)
@@ -621,6 +642,21 @@ class WindowsTTSApp(tk.Tk):
         self.clear_btn.set_enabled(not busy)
 
     def _load_voices(self) -> None:
+        if self.engine is None:
+            self.voice_combo["values"] = ["Unavailable"]
+            self.voice_var.set("Unavailable")
+            self._set_status("Speech engine unavailable in this environment.", "error")
+            self.generate_btn.set_enabled(False)
+            self.export_btn.set_enabled(False)
+            messagebox.showwarning(
+                "Speech Engine Unavailable",
+                "Windows Speech API could not be initialized.\n\n"
+                "This usually happens in compatibility layers like Whisky/Wine.\n"
+                "The app UI will open, but speech generation/export is disabled.\n\n"
+                f"Details: {self.engine_error or 'Unknown error'}",
+            )
+            return
+
         if not self.voices:
             self._set_status("No voices detected.", "error")
             return
@@ -643,6 +679,14 @@ class WindowsTTSApp(tk.Tk):
         self.char_count_var.set(f"{count} characters")
 
     def _collect(self) -> tuple[str, str, int] | None:
+        if self.engine is None:
+            messagebox.showerror(
+                "Speech unavailable",
+                "Speech generation is disabled because the Windows speech engine failed to initialize.\n\n"
+                f"Details: {self.engine_error or 'Unknown error'}",
+            )
+            return None
+
         text = self.text_box.get("1.0", "end").strip()
         voice_id = self._selected_voice_id()
         rate = int(self.rate_var.get())
