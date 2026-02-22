@@ -63,8 +63,6 @@ If you find issues, open one on GitHub with:
 - Exact step that failed
 - Screenshot or error message
 
-## IGNORE
-
 ## Local Development
 
 ```bash
