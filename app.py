@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hmac
 import os
 import re
 import secrets
@@ -10,7 +11,7 @@ import time
 import zipfile
 from pathlib import Path
 
-from flask import Flask, jsonify, redirect, render_template, request, send_file, send_from_directory, url_for
+from flask import Flask, abort, jsonify, redirect, render_template, request, send_file, send_from_directory, session, url_for
 
 try:
     from gtts import gTTS
@@ -27,6 +28,7 @@ DESKTOP_SOURCE_DIR = APP_ROOT / "desktop_app"
 WINDOWS_SOURCE_DIR = APP_ROOT / "windows_app"
 
 PROJECT_ROOT = "/projects/vocal-canvas"
+DEV_AUTH_SESSION_KEY = "vocal_canvas_dev_auth"
 
 APP_BUNDLE_NAME = "Vocal Canvas.app"
 DMG_NAME = "VocalCanvas.dmg"
@@ -43,11 +45,37 @@ BUILD_DIR.mkdir(exist_ok=True)
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
 app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_DIR))
+app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", os.getenv("SECRET_KEY", "vocal-canvas-local-secret"))
+
+DEV_MODE_PASSWORD = os.getenv("VOCAL_CANVAS_DEV_PASSWORD", os.getenv("DEV_MODE_PASSWORD", "")).strip()
+
 VOICE_CACHE: list[str] | None = None
 
 
 def _have_required_tools() -> bool:
     return shutil.which("say") is not None and shutil.which("afconvert") is not None
+
+
+def _is_dev_mode_enabled() -> bool:
+    return bool(DEV_MODE_PASSWORD)
+
+
+def _is_dev_mode_authenticated() -> bool:
+    return bool(session.get(DEV_AUTH_SESSION_KEY))
+
+
+def _safe_dev_next(next_path: str | None) -> str:
+    if next_path and next_path.startswith(f"{PROJECT_ROOT}/dev"):
+        return next_path
+    return url_for("project_dev_home_page")
+
+
+def _require_dev_mode():
+    if not _is_dev_mode_enabled():
+        abort(404)
+    if not _is_dev_mode_authenticated():
+        return redirect(url_for("project_dev_login_page", next=request.path))
+    return None
 
 
 def _have_cloud_tts() -> bool:
@@ -400,6 +428,13 @@ def _handle_demo_speak():
     return jsonify(response_payload)
 
 
+@app.context_processor
+def inject_global_template_data():
+    return {
+        "dev_mode_enabled": _is_dev_mode_enabled(),
+    }
+
+
 @app.get("/")
 def projects_hub():
     return render_template("projects_hub.html")
@@ -458,6 +493,90 @@ def project_download_page():
     )
 
 
+@app.get(f"{PROJECT_ROOT}/dev")
+def project_dev_entry():
+    if not _is_dev_mode_enabled():
+        abort(404)
+    if _is_dev_mode_authenticated():
+        return redirect(url_for("project_dev_home_page"))
+    return redirect(url_for("project_dev_login_page"))
+
+
+@app.get(f"{PROJECT_ROOT}/dev/login")
+def project_dev_login_page():
+    if not _is_dev_mode_enabled():
+        abort(404)
+    if _is_dev_mode_authenticated():
+        return redirect(url_for("project_dev_home_page"))
+
+    return render_template(
+        "dev_login.html",
+        next_path=_safe_dev_next(request.args.get("next")),
+        error_message="",
+    )
+
+
+@app.post(f"{PROJECT_ROOT}/dev/login")
+def project_dev_login_submit():
+    if not _is_dev_mode_enabled():
+        abort(404)
+    if _is_dev_mode_authenticated():
+        return redirect(url_for("project_dev_home_page"))
+
+    supplied_password = str(request.form.get("password", ""))
+    next_path = _safe_dev_next(request.form.get("next"))
+
+    if hmac.compare_digest(supplied_password, DEV_MODE_PASSWORD):
+        session[DEV_AUTH_SESSION_KEY] = True
+        return redirect(next_path)
+
+    return render_template(
+        "dev_login.html",
+        next_path=next_path,
+        error_message="Wrong password. Try again.",
+    )
+
+
+@app.post(f"{PROJECT_ROOT}/dev/logout")
+def project_dev_logout():
+    if not _is_dev_mode_enabled():
+        abort(404)
+    session.pop(DEV_AUTH_SESSION_KEY, None)
+    return redirect(url_for("project_dev_login_page"))
+
+
+@app.get(f"{PROJECT_ROOT}/dev/home")
+def project_dev_home_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_home.html", active_dev_tab="home")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/demo")
+def project_dev_demo_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_demo.html", active_dev_tab="demo")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/qa")
+def project_dev_qa_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_qa.html", active_dev_tab="qa")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/download")
+def project_dev_download_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_download.html", active_dev_tab="download")
+
+
 @app.post(f"{PROJECT_ROOT}/api/demo-speak")
 def project_demo_speak_api():
     return _handle_demo_speak()
@@ -509,6 +628,11 @@ def qa_page_legacy():
 @app.get("/download")
 def download_page_legacy():
     return redirect(url_for("project_download_page"))
+
+
+@app.get("/dev")
+def dev_page_legacy():
+    return redirect(url_for("project_dev_entry"))
 
 
 @app.post("/api/demo-speak")

@@ -1,0 +1,24 @@
+{% extends "dev_base.html" %}
+{% block title %}Dev Download | Vocal Canvas{% endblock %}
+{% block content %}
+<div class="page-intro">
+  <h1>Dev Download</h1>
+  <p>Private release staging for installer strategy and package rollout decisions.</p>
+</div>
+
+<div class="home-grid">
+  <article class="info-card">
+    <h2>Internal Release Checklist</h2>
+    <ul>
+      <li>Verify macOS `.dmg` build and launch flow.</li>
+      <li>Validate Windows package and private `.exe` build.</li>
+      <li>Confirm changelog and beta messaging before public publish.</li>
+    </ul>
+  </article>
+
+  <article class="info-card">
+    <h2>Public Safety</h2>
+    <p class="muted">Updates prepared here stay private until you manually apply them to public templates/routes.</p>
+  </article>
+</div>
+{% endblock %}

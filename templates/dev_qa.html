@@ -1,0 +1,24 @@
+{% extends "dev_base.html" %}
+{% block title %}Dev Q&A | Vocal Canvas{% endblock %}
+{% block content %}
+<div class="page-intro">
+  <h1>Dev Q&amp;A</h1>
+  <p>Draft answers and internal documentation before publishing to the public Q&amp;A tab.</p>
+</div>
+
+<div class="home-grid">
+  <article class="info-card">
+    <h2>Private Documentation</h2>
+    <ul>
+      <li>Write upcoming FAQ entries here first.</li>
+      <li>Prepare known issues and release caveats for v0.2.0.</li>
+      <li>Only publish after validation.</li>
+    </ul>
+  </article>
+
+  <article class="info-card">
+    <h2>Visibility</h2>
+    <p class="muted">This content is restricted to authenticated Dev Mode users.</p>
+  </article>
+</div>
+{% endblock %}

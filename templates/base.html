@@ -23,6 +23,9 @@
         <div class="header-links">
           <a class="projects-jump" href="{{ url_for('projects_hub') }}">All Projects</a>
           <a class="source-jump" href="https://github.com/ARealGoldknow/UtilityCanvas" target="_blank" rel="noopener noreferrer">source code (github)</a>
+          {% if dev_mode_enabled %}
+          <a class="source-jump dev-link" href="{{ url_for('project_dev_entry') }}">dev mode</a>
+          {% endif %}
         </div>
       </div>
       <nav class="tabs" aria-label="Main tabs">

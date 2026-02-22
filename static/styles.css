@@ -150,6 +150,10 @@ body {
   opacity: 1;
 }
 
+.dev-link {
+  text-transform: lowercase;
+}
+
 .tabs {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -258,6 +262,18 @@ body {
   font-size: 0.9rem;
 }
 
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  background: var(--bg-accent);
+  color: var(--ink);
+  transition: transform 160ms var(--ease-spring), box-shadow 160ms ease, border-color 160ms ease;
+}
+
 .empty-panel {
   min-height: 280px;
   display: flex;
@@ -339,6 +355,50 @@ body {
   text-decoration: underline;
 }
 
+.dev-badge {
+  border-color: #2aa5d6;
+  color: #d8f4ff;
+  background: rgba(5, 101, 164, 0.28);
+}
+
+.dev-card {
+  border-color: #2aa5d6;
+}
+
+.dev-banner {
+  margin: 0 0 0.9rem;
+  border: 1px solid rgba(42, 165, 214, 0.5);
+  border-radius: 10px;
+  padding: 0.5rem 0.66rem;
+  color: #d8f4ff;
+  background: rgba(5, 101, 164, 0.22);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.dev-login-form {
+  margin-top: 0.95rem;
+  display: grid;
+  gap: 0.7rem;
+  max-width: 420px;
+}
+
+.dev-login-form label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.dev-logout-form {
+  margin: 0;
+}
+
+.dev-logout-btn {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
 .warning {
   margin: 0.9rem 0 0;
   padding: 0.56rem 0.7rem;
@@ -386,6 +446,8 @@ textarea {
 
 textarea:focus,
 select:focus,
+input[type="password"]:focus,
+input[type="text"]:focus,
 input[type="range"]:focus {
   outline: none;
   transform: translateY(-1px);
