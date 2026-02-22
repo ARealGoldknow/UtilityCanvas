@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 import secrets
 import shutil
@@ -205,7 +206,10 @@ def _build_macos_app_bundle() -> Path:
 
 
 def _build_desktop_dmg() -> Path:
+    # On non-macOS deploy targets, serve an existing prebuilt DMG if present.
     if shutil.which("hdiutil") is None:
+        if DMG_PATH.exists():
+            return DMG_PATH
         raise RuntimeError("hdiutil is not available on this machine.")
 
     app_bundle = _build_macos_app_bundle()
@@ -397,8 +401,10 @@ def project_qa_page():
 
 @app.get(f"{PROJECT_ROOT}/download")
 def project_download_page():
-    mac_buildable = (DESKTOP_SOURCE_DIR / "vocal_canvas_desktop.py").exists() and shutil.which("hdiutil") is not None
-    windows_buildable = (WINDOWS_SOURCE_DIR / "vocal_canvas_windows.py").exists()
+    mac_buildable = DMG_PATH.exists() or (
+        (DESKTOP_SOURCE_DIR / "vocal_canvas_desktop.py").exists() and shutil.which("hdiutil") is not None
+    )
+    windows_buildable = WINDOWS_ZIP_PATH.exists() or (WINDOWS_SOURCE_DIR / "vocal_canvas_windows.py").exists()
 
     return render_template(
         "download.html",
@@ -491,4 +497,7 @@ def download_desktop_alias():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5050, debug=True)
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", os.getenv("FLASK_PORT", "5050")))
+    debug = os.getenv("FLASK_DEBUG", "1").strip().lower() in {"1", "true", "yes", "on"}
+    app.run(host=host, port=port, debug=debug)
