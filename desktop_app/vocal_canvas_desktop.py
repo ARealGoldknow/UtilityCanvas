@@ -1180,20 +1180,28 @@ class DesktopApp(tk.Tk):
 
         self.pages["home"] = self._build_placeholder_page(
             page_host,
-            heading="Home",
-            copy="",
+            heading="Vocal Canvas",
+            version="v0.1.1 (Beta)",
+            copy=(
+                "The Home tab is still being expanded. More information and quick access "
+                "features will be added in future updates."
+            ),
         )
         self.pages["demo"] = self._build_demo_page(page_host)
         self.pages["qa"] = self._build_placeholder_page(
             page_host,
-            heading="Q&A",
-            copy="",
+            heading="Vocal Canvas",
+            version="v0.1.1 (Beta)",
+            copy=(
+                "The Q&A section is currently being expanded. Detailed answers and "
+                "documentation will be available soon."
+            ),
         )
 
         for frame in self.pages.values():
             frame.grid(row=0, column=0, sticky="nsew")
 
-    def _build_placeholder_page(self, parent: tk.Widget, *, heading: str, copy: str) -> tk.Frame:
+    def _build_placeholder_page(self, parent: tk.Widget, *, heading: str, version: str, copy: str) -> tk.Frame:
         frame = tk.Frame(parent, bg=CARD_INNER)
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_rowconfigure(0, weight=1)
@@ -1210,6 +1218,15 @@ class DesktopApp(tk.Tk):
             anchor="w",
         ).pack(anchor="w")
 
+        tk.Label(
+            holder,
+            text=version,
+            bg=CARD_INNER,
+            fg=TEXT_PRIMARY,
+            font=("Avenir Next", 14, "bold"),
+            anchor="w",
+        ).pack(anchor="w", pady=(6, 0))
+
         if copy:
             tk.Label(
                 holder,
@@ -1218,7 +1235,9 @@ class DesktopApp(tk.Tk):
                 fg=TEXT_SECONDARY,
                 font=("Avenir Next", 12),
                 anchor="w",
-            ).pack(anchor="w", pady=(8, 0))
+                justify="left",
+                wraplength=760,
+            ).pack(anchor="w", pady=(10, 0))
 
         return frame
 

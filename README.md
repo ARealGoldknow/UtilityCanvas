@@ -1,11 +1,71 @@
 # Vocal Canvas
 
-Vocal Canvas is a Flask multi-page site with:
-- Project hub + tabbed web UI
-- Demo page/API
-- Download endpoints for desktop packages
+Vocal Canvas is a text-to-speech toolkit for creators with:
 
-## Local Run
+- A public website (Home, Demo, Q&A, Download)
+- A full-featured downloadable desktop app
+- macOS and Windows distribution packages
+
+Project repository: [ARealGoldknow/UtilityCanvas](https://github.com/ARealGoldknow/UtilityCanvas)
+
+## Version
+
+`v0.1.1 (Beta)`
+
+## Install
+
+### macOS
+
+1. Open the project website and go to the `Download` tab.
+2. Download `VocalCanvas.dmg`.
+3. Open the DMG and drag `Vocal Canvas.app` into `Applications`.
+4. Launch the app from `Applications`.
+5. If macOS warns on first launch, right-click the app, choose `Open`, then confirm.
+
+### Windows
+
+1. Open the project website and go to the `Download` tab.
+2. Download `VocalCanvasWindows.zip`.
+3. Extract the zip.
+4. Install Python 3.10+ if not installed.
+5. In the extracted folder, run:
+
+```bash
+pip install -r requirements.txt
+python vocal_canvas_windows.py
+```
+
+## Features
+
+- Multi-page website with animated navigation
+- Quick online demo voice preview
+- Desktop app with full controls:
+  - System voice selection
+  - Speed control
+  - Audio generation and WAV export
+- Download delivery for:
+  - macOS `.dmg`
+  - Windows `.zip`
+- Unified dark theme across website and apps
+
+## Beta Expectations
+
+This is a beta release. Expect:
+
+- Visual and layout changes between versions
+- Ongoing tuning for installer behavior and first-launch flow
+- Incomplete documentation in some sections (for example, Q&A)
+- Fast iteration on UI details and quality-of-life features
+
+If you find issues, open one on GitHub with:
+
+- OS and version
+- Exact step that failed
+- Screenshot or error message
+
+## IGNORE
+
+## Local Development
 
 ```bash
 cd /Users/goldknow/Vocal-canvas
@@ -14,29 +74,16 @@ cd /Users/goldknow/Vocal-canvas
 
 Open: `http://127.0.0.1:5050`
 
-## Publish Publicly (Render)
+## Deployment (Render)
 
-This repo includes `render.yaml` and `Procfile`.
+This repo already includes `render.yaml` and `Procfile`.
 
-1. Push this folder to GitHub.
-2. In Render: **New +** -> **Blueprint**.
-3. Connect your GitHub repo and select `Vocal-canvas`.
+1. Push changes to GitHub.
+2. In Render, create a Blueprint deployment from this repository.
+3. Use branch `main` and blueprint path `render.yaml`.
 4. Deploy.
 
-Render will run:
-- Build: `pip install -r requirements.txt`
-- Start: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
+Render uses:
 
-## Notes About Demo + Downloads on Cloud
-
-- Demo speech generation uses macOS commands (`say`, `afconvert`), so on Linux hosts the demo API may be unavailable.
-- macOS download route can still serve a prebuilt DMG if `downloads/VocalCanvas.dmg` exists in your deploy.
-- Windows zip can be served from prebuilt artifact as well.
-
-## Key Paths
-
-- `app.py` - routes, API, package-serving logic
-- `templates/` - pages/tabs
-- `static/` - styles/scripts
-- `desktop_app/` - mac app source
-- `windows_app/` - windows app source
+- Build command: `pip install -r requirements.txt`
+- Start command: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`

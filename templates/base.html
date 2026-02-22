@@ -13,8 +13,17 @@
   <main class="site-wrap">
     <header class="site-header">
       <div class="brand-row">
-        <div class="brand">Vocal Canvas</div>
-        <a class="projects-jump" href="{{ url_for('projects_hub') }}">All Projects</a>
+        <div class="brand-block">
+          <div class="brand">
+            Vocal Canvas
+            <span class="beta-badge">BETA</span>
+          </div>
+          <div class="brand-version">v0.1.1</div>
+        </div>
+        <div class="header-links">
+          <a class="projects-jump" href="{{ url_for('projects_hub') }}">All Projects</a>
+          <a class="source-jump" href="https://github.com/ARealGoldknow/UtilityCanvas" target="_blank" rel="noopener noreferrer">source code (github)</a>
+        </div>
       </div>
       <nav class="tabs" aria-label="Main tabs">
         <a class="tab {% if active_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_home_page') }}">Home</a>
