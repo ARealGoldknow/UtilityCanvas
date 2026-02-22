@@ -20,6 +20,9 @@ downloads/*
 !downloads/.gitkeep
 !downloads/VocalCanvas.dmg
 !downloads/VocalCanvasWindows.zip
+!downloads/windows_installer/
+!downloads/windows_installer/README.md
+!downloads/windows_installer/build_windows_exe.bat
 
 # Logs
 *.log
