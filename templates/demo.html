@@ -6,8 +6,10 @@
   <p>Quick voice preview only. Full features are in the downloadable app.</p>
 </div>
 
-{% if not tools_ready %}
-<p class="warning">Demo requires macOS commands <code>say</code> and <code>afconvert</code>.</p>
+{% if demo_mode == "cloud" %}
+<p class="warning">Online demo mode is active on this host. Full voice controls are in the desktop app.</p>
+{% elif demo_mode == "unavailable" %}
+<p class="warning">Demo audio is currently unavailable on this server.</p>
 {% endif %}
 
 <div class="demo-shell">

@@ -12,6 +12,11 @@ from pathlib import Path
 
 from flask import Flask, jsonify, redirect, render_template, request, send_file, send_from_directory, url_for
 
+try:
+    from gtts import gTTS
+except Exception:
+    gTTS = None
+
 APP_ROOT = Path(__file__).resolve().parent
 TEMPLATE_DIR = APP_ROOT / "templates"
 STATIC_DIR = APP_ROOT / "static"
@@ -31,7 +36,7 @@ DMG_PATH = DOWNLOAD_DIR / DMG_NAME
 WINDOWS_ZIP_PATH = DOWNLOAD_DIR / WINDOWS_ZIP_NAME
 
 DEMO_MAX_CHARS = 200
-OUTPUT_EXTENSION = "wav"
+OUTPUT_EXTENSIONS = ("wav", "mp3")
 
 OUTPUT_DIR.mkdir(exist_ok=True)
 BUILD_DIR.mkdir(exist_ok=True)
@@ -43,6 +48,18 @@ VOICE_CACHE: list[str] | None = None
 
 def _have_required_tools() -> bool:
     return shutil.which("say") is not None and shutil.which("afconvert") is not None
+
+
+def _have_cloud_tts() -> bool:
+    return gTTS is not None
+
+
+def _demo_mode() -> str:
+    if _have_required_tools():
+        return "macos"
+    if _have_cloud_tts():
+        return "cloud"
+    return "unavailable"
 
 
 def _parse_voices() -> list[str]:
@@ -79,13 +96,14 @@ def _default_voice(voices: list[str]) -> str:
 
 def _cleanup_old_outputs(max_age_seconds: int = 12 * 60 * 60) -> None:
     now = time.time()
-    pattern = f"*.{OUTPUT_EXTENSION}"
-    for path in OUTPUT_DIR.glob(pattern):
-        try:
-            if now - path.stat().st_mtime > max_age_seconds:
-                path.unlink(missing_ok=True)
-        except OSError:
-            continue
+    for ext in OUTPUT_EXTENSIONS:
+        pattern = f"*.{ext}"
+        for path in OUTPUT_DIR.glob(pattern):
+            try:
+                if now - path.stat().st_mtime > max_age_seconds:
+                    path.unlink(missing_ok=True)
+            except OSError:
+                continue
 
 
 def _list_source_files(folder: Path) -> list[Path]:
@@ -280,7 +298,7 @@ def _build_windows_zip() -> Path:
 
 def _render_to_wav(text: str, voice: str, rate: int, prefix: str = "demo") -> Path:
     unique_id = f"{int(time.time())}_{secrets.token_hex(4)}"
-    output_file = OUTPUT_DIR / f"{prefix}_{unique_id}.{OUTPUT_EXTENSION}"
+    output_file = OUTPUT_DIR / f"{prefix}_{unique_id}.wav"
 
     with tempfile.NamedTemporaryFile(suffix=".aiff", delete=False) as temp_file:
         temp_path = Path(temp_file.name)
@@ -303,6 +321,17 @@ def _render_to_wav(text: str, voice: str, rate: int, prefix: str = "demo") -> Pa
         temp_path.unlink(missing_ok=True)
 
 
+def _render_to_mp3(text: str, prefix: str = "demo") -> Path:
+    if gTTS is None:
+        raise RuntimeError("Cloud TTS dependency is unavailable.")
+
+    unique_id = f"{int(time.time())}_{secrets.token_hex(4)}"
+    output_file = OUTPUT_DIR / f"{prefix}_{unique_id}.mp3"
+    tts = gTTS(text=text, lang="en")
+    tts.save(str(output_file))
+    return output_file
+
+
 def _artifact_build_id(path: Path) -> int:
     if not path.exists():
         return 0
@@ -317,9 +346,6 @@ def _apply_no_cache_headers(response):
 
 
 def _handle_demo_speak():
-    if not _have_required_tools():
-        return jsonify({"error": "Demo requires macOS commands 'say' and 'afconvert'."}), 500
-
     payload = request.get_json(silent=True) or {}
     text = str(payload.get("text", "")).strip()
     if not text:
@@ -327,38 +353,51 @@ def _handle_demo_speak():
     if len(text) > DEMO_MAX_CHARS:
         return jsonify({"error": f"Demo is limited to {DEMO_MAX_CHARS} characters."}), 400
 
-    voices = _parse_voices()
-    chosen_voice = str(payload.get("voice", "")).strip()
-    if chosen_voice not in voices:
-        chosen_voice = _default_voice(voices)
+    mode = _demo_mode()
+    chosen_voice = "Cloud"
+    rate: int | None = None
 
-    if not chosen_voice:
-        return jsonify({"error": "No voices found on this machine."}), 500
+    if mode == "macos":
+        voices = _parse_voices()
+        chosen_voice = str(payload.get("voice", "")).strip()
+        if chosen_voice not in voices:
+            chosen_voice = _default_voice(voices)
 
-    try:
-        rate = int(payload.get("rate", 170))
-    except (TypeError, ValueError):
-        return jsonify({"error": "Rate must be a number between 80 and 400."}), 400
+        if not chosen_voice:
+            return jsonify({"error": "No voices found on this machine."}), 500
 
-    if not 80 <= rate <= 400:
-        return jsonify({"error": "Rate must be between 80 and 400."}), 400
+        try:
+            rate = int(payload.get("rate", 170))
+        except (TypeError, ValueError):
+            return jsonify({"error": "Rate must be a number between 80 and 400."}), 400
 
-    try:
-        output_file = _render_to_wav(text=text, voice=chosen_voice, rate=rate, prefix="demo")
-    except subprocess.CalledProcessError as exc:
-        detail = (exc.stderr or exc.stdout or str(exc)).strip()
-        return jsonify({"error": "Failed to generate demo speech.", "detail": detail}), 500
+        if not 80 <= rate <= 400:
+            return jsonify({"error": "Rate must be between 80 and 400."}), 400
+
+        try:
+            output_file = _render_to_wav(text=text, voice=chosen_voice, rate=rate, prefix="demo")
+        except subprocess.CalledProcessError as exc:
+            detail = (exc.stderr or exc.stdout or str(exc)).strip()
+            return jsonify({"error": "Failed to generate demo speech.", "detail": detail}), 500
+    elif mode == "cloud":
+        try:
+            output_file = _render_to_mp3(text=text, prefix="demo")
+        except Exception as exc:
+            return jsonify({"error": "Failed to generate demo speech.", "detail": str(exc)}), 500
+    else:
+        return jsonify({"error": "Demo audio is unavailable on this server."}), 500
 
     _cleanup_old_outputs()
-    return jsonify(
-        {
-            "audio_url": url_for("project_serve_audio", filename=output_file.name),
-            "voice": chosen_voice,
-            "rate": rate,
-            "characters": len(text),
-            "format": OUTPUT_EXTENSION,
-        }
-    )
+    response_payload = {
+        "audio_url": url_for("project_serve_audio", filename=output_file.name),
+        "voice": chosen_voice,
+        "characters": len(text),
+        "format": output_file.suffix.lstrip(".").lower(),
+    }
+    if rate is not None:
+        response_payload["rate"] = rate
+
+    return jsonify(response_payload)
 
 
 @app.get("/")
@@ -383,13 +422,14 @@ def project_home_page():
 
 @app.get(f"{PROJECT_ROOT}/demo")
 def project_demo_page():
+    demo_mode = _demo_mode()
     voices = _parse_voices()
     return render_template(
         "demo.html",
         active_tab="demo",
         voices=voices,
         default_voice=_default_voice(voices),
-        tools_ready=_have_required_tools(),
+        demo_mode=demo_mode,
         demo_limit=DEMO_MAX_CHARS,
     )
 
