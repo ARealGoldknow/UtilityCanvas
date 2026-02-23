@@ -28,18 +28,18 @@
         </div>
       </div>
 
-      <nav class="tabs" aria-label="Dev tabs">
-        <a class="tab {% if active_dev_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_home_page') }}">Home</a>
-        <a class="tab {% if active_dev_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_demo_page') }}">Demo</a>
-        <a class="tab {% if active_dev_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_qa_page') }}">Q&amp;A</a>
-        <a class="tab {% if active_dev_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_download_page') }}">Download</a>
+      <nav class="tabs" aria-label="Dev menu">
+        <a class="tab {% if active_dev_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_home_page') }}">Dev Home</a>
+        <a class="tab {% if active_dev_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_demo_page') }}">Dev Demo</a>
+        <a class="tab {% if active_dev_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_qa_page') }}">Dev Q&amp;A</a>
+        <a class="tab {% if active_dev_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_download_page') }}">Dev Download</a>
       </nav>
 
       <nav class="tabs dev-copy-tabs" aria-label="Public copy menu">
-        <a class="tab {% if active_copy_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_copy_home_page') }}">Home</a>
-        <a class="tab {% if active_copy_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_copy_demo_page') }}">Demo</a>
-        <a class="tab {% if active_copy_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_copy_qa_page') }}">Q&amp;A</a>
-        <a class="tab {% if active_copy_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_copy_download_page') }}">Download</a>
+        <a class="tab {% if active_copy_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_copy_home_page') }}">Public Home</a>
+        <a class="tab {% if active_copy_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_copy_demo_page') }}">Public Demo</a>
+        <a class="tab {% if active_copy_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_copy_qa_page') }}">Public Q&amp;A</a>
+        <a class="tab {% if active_copy_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_copy_download_page') }}">Public Download</a>
       </nav>
     </header>
 
