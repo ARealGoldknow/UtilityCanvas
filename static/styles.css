@@ -154,6 +154,21 @@ body {
   text-transform: lowercase;
 }
 
+.dev-header-links {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.dev-copy-caption {
+  margin: 0.45rem 0 0.15rem;
+  color: #d8f4ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .dev-copy-tabs {
   margin-top: 0.38rem;
 }

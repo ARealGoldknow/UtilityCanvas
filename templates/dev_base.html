@@ -20,7 +20,7 @@
           </div>
           <div class="brand-version">Private preview</div>
         </div>
-        <div class="header-links">
+        <div class="header-links dev-header-links">
           <a class="projects-jump" href="{{ url_for('project_home_page') }}">Public Site</a>
           <form class="dev-logout-form" method="post" action="{{ url_for('project_dev_logout') }}">
             <button class="source-jump dev-logout-btn" type="submit">leave dev mode</button>
@@ -35,11 +35,12 @@
         <a class="tab {% if active_dev_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_download_page') }}">Download</a>
       </nav>
 
+      <p class="dev-copy-caption">Public Menu Copy (isolated from public mode)</p>
       <nav class="tabs dev-copy-tabs" aria-label="Dev copy tabs">
-        <a class="tab {% if active_copy_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_copy_home_page') }}">Public Copy: Home</a>
-        <a class="tab {% if active_copy_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_copy_demo_page') }}">Public Copy: Demo</a>
-        <a class="tab {% if active_copy_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_copy_qa_page') }}">Public Copy: Q&amp;A</a>
-        <a class="tab {% if active_copy_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_copy_download_page') }}">Public Copy: Download</a>
+        <a class="tab {% if active_copy_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_copy_home_page') }}">Home</a>
+        <a class="tab {% if active_copy_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_copy_demo_page') }}">Demo</a>
+        <a class="tab {% if active_copy_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_copy_qa_page') }}">Q&amp;A</a>
+        <a class="tab {% if active_copy_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_copy_download_page') }}">Download</a>
       </nav>
     </header>
 
