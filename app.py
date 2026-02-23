@@ -428,6 +428,31 @@ def _handle_demo_speak():
     return jsonify(response_payload)
 
 
+def _demo_view_context() -> dict[str, object]:
+    voices = _parse_voices()
+    return {
+        "voices": voices,
+        "default_voice": _default_voice(voices),
+        "demo_mode": _demo_mode(),
+        "demo_limit": DEMO_MAX_CHARS,
+    }
+
+
+def _download_view_context() -> dict[str, object]:
+    mac_buildable = DMG_PATH.exists() or (
+        (DESKTOP_SOURCE_DIR / "vocal_canvas_desktop.py").exists() and shutil.which("hdiutil") is not None
+    )
+    windows_buildable = WINDOWS_ZIP_PATH.exists() or (WINDOWS_SOURCE_DIR / "vocal_canvas_windows.py").exists()
+    return {
+        "mac_buildable": mac_buildable,
+        "windows_buildable": windows_buildable,
+        "mac_filename": DMG_NAME,
+        "windows_filename": WINDOWS_ZIP_NAME,
+        "mac_build_id": _artifact_build_id(DMG_PATH),
+        "windows_build_id": _artifact_build_id(WINDOWS_ZIP_PATH),
+    }
+
+
 @app.context_processor
 def inject_global_template_data():
     return {
@@ -457,15 +482,10 @@ def project_home_page():
 
 @app.get(f"{PROJECT_ROOT}/demo")
 def project_demo_page():
-    demo_mode = _demo_mode()
-    voices = _parse_voices()
     return render_template(
         "demo.html",
         active_tab="demo",
-        voices=voices,
-        default_voice=_default_voice(voices),
-        demo_mode=demo_mode,
-        demo_limit=DEMO_MAX_CHARS,
+        **_demo_view_context(),
     )
 
 
@@ -476,20 +496,10 @@ def project_qa_page():
 
 @app.get(f"{PROJECT_ROOT}/download")
 def project_download_page():
-    mac_buildable = DMG_PATH.exists() or (
-        (DESKTOP_SOURCE_DIR / "vocal_canvas_desktop.py").exists() and shutil.which("hdiutil") is not None
-    )
-    windows_buildable = WINDOWS_ZIP_PATH.exists() or (WINDOWS_SOURCE_DIR / "vocal_canvas_windows.py").exists()
-
     return render_template(
         "download.html",
         active_tab="download",
-        mac_buildable=mac_buildable,
-        windows_buildable=windows_buildable,
-        mac_filename=DMG_NAME,
-        windows_filename=WINDOWS_ZIP_NAME,
-        mac_build_id=_artifact_build_id(DMG_PATH),
-        windows_build_id=_artifact_build_id(WINDOWS_ZIP_PATH),
+        **_download_view_context(),
     )
 
 
@@ -550,7 +560,7 @@ def project_dev_home_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_home.html", active_dev_tab="home")
+    return render_template("dev_home.html", active_dev_tab="home", active_copy_tab="")
 
 
 @app.get(f"{PROJECT_ROOT}/dev/demo")
@@ -558,7 +568,7 @@ def project_dev_demo_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_demo.html", active_dev_tab="demo")
+    return render_template("dev_demo.html", active_dev_tab="demo", active_copy_tab="")
 
 
 @app.get(f"{PROJECT_ROOT}/dev/qa")
@@ -566,7 +576,7 @@ def project_dev_qa_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_qa.html", active_dev_tab="qa")
+    return render_template("dev_qa.html", active_dev_tab="qa", active_copy_tab="")
 
 
 @app.get(f"{PROJECT_ROOT}/dev/download")
@@ -574,7 +584,49 @@ def project_dev_download_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_download.html", active_dev_tab="download")
+    return render_template("dev_download.html", active_dev_tab="download", active_copy_tab="")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/copy/home")
+def project_dev_copy_home_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_copy_home.html", active_dev_tab="home", active_copy_tab="home")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/copy/demo")
+def project_dev_copy_demo_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template(
+        "dev_copy_demo.html",
+        active_dev_tab="demo",
+        active_copy_tab="demo",
+        **_demo_view_context(),
+    )
+
+
+@app.get(f"{PROJECT_ROOT}/dev/copy/qa")
+def project_dev_copy_qa_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template("dev_copy_qa.html", active_dev_tab="qa", active_copy_tab="qa")
+
+
+@app.get(f"{PROJECT_ROOT}/dev/copy/download")
+def project_dev_copy_download_page():
+    maybe_redirect = _require_dev_mode()
+    if maybe_redirect is not None:
+        return maybe_redirect
+    return render_template(
+        "dev_copy_download.html",
+        active_dev_tab="download",
+        active_copy_tab="download",
+        **_download_view_context(),
+    )
 
 
 @app.post(f"{PROJECT_ROOT}/api/demo-speak")
