@@ -560,7 +560,7 @@ def project_dev_home_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_home.html", active_dev_tab="home", active_copy_tab="")
+    return render_template("dev_home.html", active_dev_tab="home")
 
 
 @app.get(f"{PROJECT_ROOT}/dev/demo")
@@ -568,7 +568,7 @@ def project_dev_demo_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_demo.html", active_dev_tab="demo", active_copy_tab="")
+    return render_template("dev_demo.html", active_dev_tab="demo", **_demo_view_context())
 
 
 @app.get(f"{PROJECT_ROOT}/dev/qa")
@@ -576,7 +576,7 @@ def project_dev_qa_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_qa.html", active_dev_tab="qa", active_copy_tab="")
+    return render_template("dev_qa.html", active_dev_tab="qa")
 
 
 @app.get(f"{PROJECT_ROOT}/dev/download")
@@ -584,7 +584,7 @@ def project_dev_download_page():
     maybe_redirect = _require_dev_mode()
     if maybe_redirect is not None:
         return maybe_redirect
-    return render_template("dev_download.html", active_dev_tab="download", active_copy_tab="")
+    return render_template("dev_download.html", active_dev_tab="download", **_download_view_context())
 
 
 @app.get(f"{PROJECT_ROOT}/dev/copy/home")

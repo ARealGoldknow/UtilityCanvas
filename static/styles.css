@@ -409,6 +409,12 @@ input[type="text"] {
   padding: 0;
 }
 
+.dev-divider {
+  margin: 1.05rem 0 1rem;
+  border: 0;
+  border-top: 1px solid rgba(42, 165, 214, 0.5);
+}
+
 .warning {
   margin: 0.9rem 0 0;
   padding: 0.56rem 0.7rem;
