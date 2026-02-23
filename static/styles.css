@@ -160,23 +160,8 @@ body {
   gap: 0.55rem;
 }
 
-.dev-copy-caption {
-  margin: 0.45rem 0 0.15rem;
-  color: #d8f4ff;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
 .dev-copy-tabs {
-  margin-top: 0.38rem;
-}
-
-.dev-copy-tabs .tab {
-  font-size: 0.8rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  margin-top: 0.42rem;
 }
 
 .tabs {

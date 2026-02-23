@@ -35,8 +35,7 @@
         <a class="tab {% if active_dev_tab == 'download' %}is-active{% endif %}" style="--tab-index: 3;" href="{{ url_for('project_dev_download_page') }}">Download</a>
       </nav>
 
-      <p class="dev-copy-caption">Public Menu Copy (isolated from public mode)</p>
-      <nav class="tabs dev-copy-tabs" aria-label="Dev copy tabs">
+      <nav class="tabs dev-copy-tabs" aria-label="Public copy menu">
         <a class="tab {% if active_copy_tab == 'home' %}is-active{% endif %}" style="--tab-index: 0;" href="{{ url_for('project_dev_copy_home_page') }}">Home</a>
         <a class="tab {% if active_copy_tab == 'demo' %}is-active{% endif %}" style="--tab-index: 1;" href="{{ url_for('project_dev_copy_demo_page') }}">Demo</a>
         <a class="tab {% if active_copy_tab == 'qa' %}is-active{% endif %}" style="--tab-index: 2;" href="{{ url_for('project_dev_copy_qa_page') }}">Q&amp;A</a>
