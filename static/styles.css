@@ -416,26 +416,32 @@ input[type="text"] {
 }
 
 .qa-template-block {
-  margin-top: 0.9rem;
+  margin-top: 1rem;
+  width: min(700px, 100%);
 }
 
 .qa-dropdown {
   margin: 0;
+  border: 0;
 }
 
 .qa-dropdown > summary {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.62rem;
   list-style: none;
   cursor: pointer;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
-  background: transparent;
+  border: 0;
+  border-radius: 18px;
+  padding: 1.1rem 1.35rem;
+  background:
+    linear-gradient(130deg, rgba(6, 133, 203, 0.36), rgba(0, 29, 41, 0.84)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
   color: var(--ink);
+  font-size: 1.12rem;
   font-weight: 700;
-  transition: color 120ms ease, border-color 120ms ease, transform 120ms var(--ease-spring);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
+  transition: color 320ms ease, transform 320ms var(--ease-spring), box-shadow 320ms ease;
 }
 
 .qa-dropdown > summary::-webkit-details-marker {
@@ -449,13 +455,14 @@ input[type="text"] {
 .qa-dropdown > summary::before {
   content: "\25B8";
   color: var(--ink-soft);
-  transition: transform 160ms var(--ease-spring), color 120ms ease, opacity 120ms ease;
+  transition: transform 280ms var(--ease-spring), color 220ms ease, opacity 220ms ease;
   opacity: 0.95;
 }
 
 .qa-dropdown > summary:hover {
   color: var(--ink);
-  border-color: var(--ink-soft);
+  box-shadow: 0 20px 32px rgba(5, 100, 164, 0.28);
+  transform: translateY(-2px);
 }
 
 .qa-dropdown > summary:hover::before {
@@ -465,7 +472,7 @@ input[type="text"] {
 .qa-dropdown[open] > summary {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .qa-dropdown[open] > summary::before {
@@ -474,17 +481,21 @@ input[type="text"] {
 }
 
 .qa-dropdown-content {
-  border: 1px solid var(--line);
-  border-top: 0;
-  border-radius: 0 0 10px 10px;
-  padding: 0.62rem 0.7rem;
-  background: transparent;
-  animation: qaDropFadeIn 220ms var(--ease-spring) forwards;
+  border: 0;
+  border-radius: 0 0 18px 18px;
+  padding: 1.18rem 1.35rem;
+  background:
+    linear-gradient(160deg, rgba(0, 29, 41, 0.9), rgba(5, 101, 164, 0.35)),
+    linear-gradient(180deg, rgba(236, 236, 236, 0.05), rgba(236, 236, 236, 0));
+  animation: qaDropFadeIn 860ms ease forwards;
+  box-shadow: 0 20px 32px rgba(0, 0, 0, 0.24);
 }
 
 .qa-dropdown-content p {
   margin: 0;
   color: var(--ink-soft);
+  font-size: 1.03rem;
+  line-height: 1.6;
 }
 
 .warning {
@@ -901,7 +912,7 @@ body.is-transitioning .bg-shape {
 @keyframes qaDropFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
