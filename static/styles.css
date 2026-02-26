@@ -434,14 +434,13 @@ input[type="text"] {
   border: 0;
   border-radius: 18px;
   padding: 1.1rem 1.35rem;
-  background:
-    linear-gradient(130deg, rgba(6, 133, 203, 0.36), rgba(0, 29, 41, 0.84)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+  background: transparent;
   color: var(--ink);
   font-size: 1.12rem;
   font-weight: 700;
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
-  transition: color 320ms ease, transform 320ms var(--ease-spring), box-shadow 320ms ease;
+  box-shadow: none;
+  transition: color 320ms ease, transform 320ms var(--ease-spring), opacity 320ms ease;
+  animation: qaSummaryFadeIn 620ms var(--ease-spring) both;
 }
 
 .qa-dropdown > summary::-webkit-details-marker {
@@ -461,8 +460,8 @@ input[type="text"] {
 
 .qa-dropdown > summary:hover {
   color: var(--ink);
-  box-shadow: 0 20px 32px rgba(5, 100, 164, 0.28);
   transform: translateY(-2px);
+  opacity: 0.96;
 }
 
 .qa-dropdown > summary:hover::before {
@@ -484,11 +483,9 @@ input[type="text"] {
   border: 0;
   border-radius: 0 0 18px 18px;
   padding: 1.18rem 1.35rem;
-  background:
-    linear-gradient(160deg, rgba(0, 29, 41, 0.9), rgba(5, 101, 164, 0.35)),
-    linear-gradient(180deg, rgba(236, 236, 236, 0.05), rgba(236, 236, 236, 0));
+  background: transparent;
   animation: qaDropFadeIn 860ms ease forwards;
-  box-shadow: 0 20px 32px rgba(0, 0, 0, 0.24);
+  box-shadow: none;
 }
 
 .qa-dropdown-content p {
@@ -496,6 +493,17 @@ input[type="text"] {
   color: var(--ink-soft);
   font-size: 1.03rem;
   line-height: 1.6;
+}
+
+.qa-dropdown-label {
+  display: inline-block;
+  background: linear-gradient(120deg, #ececec 0%, #6ab7ff 52%, #89e2d8 100%);
+  background-size: 210% 210%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: qaLabelGradientShift 3s ease-in-out infinite;
 }
 
 .warning {
@@ -913,10 +921,35 @@ body.is-transitioning .bg-shape {
   from {
     opacity: 0;
     transform: translateY(-10px);
+    filter: blur(3px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes qaSummaryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes qaLabelGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
