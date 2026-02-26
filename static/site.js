@@ -130,4 +130,29 @@
       showUpcoming();
     });
   }
+
+  const qaDropdowns = document.querySelectorAll(".qa-dropdown");
+  qaDropdowns.forEach((dropdown) => {
+    const summary = dropdown.querySelector("summary");
+    const content = dropdown.querySelector(".qa-dropdown-content");
+    if (!summary || !content) return;
+
+    const replayAnimation = () => {
+      summary.classList.remove("qa-animate");
+      content.classList.remove("qa-animate");
+      void summary.offsetWidth;
+      void content.offsetWidth;
+      summary.classList.add("qa-animate");
+      content.classList.add("qa-animate");
+    };
+
+    dropdown.addEventListener("toggle", () => {
+      if (dropdown.open) {
+        replayAnimation();
+      } else {
+        summary.classList.remove("qa-animate");
+        content.classList.remove("qa-animate");
+      }
+    });
+  });
 })();

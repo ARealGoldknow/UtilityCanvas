@@ -440,7 +440,6 @@ input[type="text"] {
   font-weight: 700;
   box-shadow: none;
   transition: color 320ms ease, transform 320ms var(--ease-spring), opacity 320ms ease;
-  animation: qaSummaryFadeIn 620ms var(--ease-spring) both;
 }
 
 .qa-dropdown > summary::-webkit-details-marker {
@@ -484,8 +483,15 @@ input[type="text"] {
   border-radius: 0 0 18px 18px;
   padding: 1.18rem 1.35rem;
   background: transparent;
-  animation: qaDropFadeIn 860ms ease forwards;
   box-shadow: none;
+}
+
+.qa-dropdown > summary.qa-animate {
+  animation: qaSummaryFadeIn 620ms var(--ease-spring);
+}
+
+.qa-dropdown-content.qa-animate {
+  animation: qaDropFadeIn 860ms ease;
 }
 
 .qa-dropdown-content p {
