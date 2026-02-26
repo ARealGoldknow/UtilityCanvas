@@ -424,22 +424,53 @@ input[type="text"] {
 }
 
 .qa-dropdown > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  list-style: none;
   cursor: pointer;
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.55rem 0.7rem;
-  background: rgba(0, 17, 62, 0.56);
+  background: transparent;
   color: var(--ink);
   font-weight: 700;
+  transition: color 120ms ease, border-color 120ms ease, transform 120ms var(--ease-spring);
 }
 
 .qa-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+.qa-dropdown > summary::marker {
+  content: "";
+}
+
+.qa-dropdown > summary::before {
+  content: "\25B8";
+  color: var(--ink-soft);
+  transition: transform 160ms var(--ease-spring), color 120ms ease, opacity 120ms ease;
+  opacity: 0.95;
+}
+
+.qa-dropdown > summary:hover {
+  color: var(--ink);
+  border-color: var(--ink-soft);
+}
+
+.qa-dropdown > summary:hover::before {
   color: var(--ink);
 }
 
 .qa-dropdown[open] > summary {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  transform: translateY(-1px);
+}
+
+.qa-dropdown[open] > summary::before {
+  transform: rotate(90deg);
+  opacity: 1;
 }
 
 .qa-dropdown-content {
@@ -447,7 +478,8 @@ input[type="text"] {
   border-top: 0;
   border-radius: 0 0 10px 10px;
   padding: 0.62rem 0.7rem;
-  background: rgba(0, 29, 41, 0.8);
+  background: transparent;
+  animation: qaDropFadeIn 220ms var(--ease-spring) forwards;
 }
 
 .qa-dropdown-content p {
@@ -863,6 +895,17 @@ body.is-transitioning .bg-shape {
   to {
     transform: translate(-50%, -50%) scale(22);
     opacity: 0;
+  }
+}
+
+@keyframes qaDropFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
