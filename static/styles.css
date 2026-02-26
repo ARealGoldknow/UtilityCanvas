@@ -415,6 +415,46 @@ input[type="text"] {
   border-top: 1px solid rgba(42, 165, 214, 0.5);
 }
 
+.qa-template-block {
+  margin-top: 0.9rem;
+}
+
+.qa-dropdown {
+  margin: 0;
+}
+
+.qa-dropdown > summary {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  background: rgba(0, 17, 62, 0.56);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.qa-dropdown > summary::-webkit-details-marker {
+  color: var(--ink);
+}
+
+.qa-dropdown[open] > summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.qa-dropdown-content {
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+  padding: 0.62rem 0.7rem;
+  background: rgba(0, 29, 41, 0.8);
+}
+
+.qa-dropdown-content p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
 .warning {
   margin: 0.9rem 0 0;
   padding: 0.56rem 0.7rem;
